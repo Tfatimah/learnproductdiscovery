@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Product Discovery Playground - Interactive Guide</title>
+<style>
+:root{--primary:#6366f1;--primary-dark:#4f46e5;--secondary:#06b6d4;--accent:#f59e0b;--success:#10b981;--danger:#ef4444;--dark:#1e293b;--light:#f8fafc;--gray:#64748b;--card-bg:#ffffff;--border:#e2e8f0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:var(--dark);line-height:1.6;}
+.container{max-width:900px;margin:0 auto;padding:20px;}
+.header{text-align:center;padding:40px 20px;color:white;}
+.header h1{font-size:2.5rem;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,0.2);}
+.header p{font-size:1.1rem;opacity:0.9;max-width:600px;margin:0 auto;}
+.badge{display:inline-block;background:rgba(255,255,255,0.2);padding:6px 16px;border-radius:20px;font-size:0.85rem;margin-top:15px;backdrop-filter:blur(10px);}
+.progress-container{background:rgba(255,255,255,0.15);border-radius:10px;padding:4px;margin:20px 0 30px;backdrop-filter:blur(10px);}
+.progress-bar{height:8px;background:linear-gradient(90deg,var(--secondary),var(--accent));border-radius:6px;transition:width 0.5s ease;width:0%;}
+.progress-text{text-align:center;color:white;font-size:0.9rem;margin-top:8px;font-weight:500;}
+.module{background:var(--card-bg);border-radius:16px;padding:30px;margin-bottom:20px;box-shadow:0 10px 40px rgba(0,0,0,0.1);display:none;animation:slideIn 0.4s ease;border:1px solid var(--border);}
+.module.active{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.module-header{display:flex;align-items:center;gap:15px;margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid var(--border);}
+.module-number{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:bold;flex-shrink:0;}
+.module-title{font-size:1.5rem;color:var(--dark);}
+.module-subtitle{color:var(--gray);font-size:0.95rem;}
+.content-block{margin-bottom:24px;}
+.content-block h3{color:var(--primary-dark);margin-bottom:10px;font-size:1.2rem;}
+.content-block p{color:var(--gray);margin-bottom:12px;}
+.highlight-box{background:linear-gradient(135deg,#eef2ff,#e0f2fe);border-left:4px solid var(--primary);padding:16px 20px;border-radius:8px;margin:16px 0;}
+.warning-box{background:linear-gradient(135deg,#fef3c7,#fde68a);border-left:4px solid var(--accent);padding:16px 20px;border-radius:8px;margin:16px 0;}
+.interactive-area{background:var(--light);border:2px dashed var(--border);border-radius:12px;padding:24px;margin:20px 0;transition:all 0.3s ease;}
+.interactive-area:hover{border-color:var(--primary);background:#f1f5f9;}
+.input-group{margin-bottom:16px;}
+.input-group label{display:block;font-weight:600;color:var(--dark);margin-bottom:6px;font-size:0.95rem;}
+.input-group input,.input-group textarea,.input-group select{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.95rem;transition:border-color 0.3s;background:white;}
+.input-group input:focus,.input-group textarea:focus,.input-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,0.1);}
+.input-group textarea{resize:vertical;min-height:100px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border:none;border-radius:8px;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;margin:8px 4px;}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 4px 15px rgba(99,102,241,0.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,0.4);}
+.btn-secondary{background:white;color:var(--primary);border:2px solid var(--primary);}
+.btn-secondary:hover{background:var(--primary);color:white;}
+.btn-success{background:linear-gradient(135deg,var(--success),#059669);color:white;}
+.btn-success:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(16,185,129,0.3);}
+.btn-option{background:white;border:2px solid var(--border);color:var(--dark);text-align:left;width:100%;margin:8px 0;padding:16px 20px;}
+.btn-option:hover{border-color:var(--primary);background:#f8fafc;}
+.btn-option.selected{border-color:var(--success);background:#ecfdf5;}
+.scenario-card{background:linear-gradient(135deg,#fef3c7,#fffbeb);border-radius:12px;padding:20px;margin:16px 0;border:1px solid #fcd34d;}
+.scenario-card h4{color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.scenario-card p{color:#78350f;}
+.framework-box{background:white;border:2px solid var(--primary);border-radius:12px;padding:20px;margin:16px 0;position:relative;}
+.framework-box::before{content:"FRAMEWORK";position:absolute;top:-10px;left:20px;background:var(--primary);color:white;padding:2px 12px;border-radius:4px;font-size:0.75rem;font-weight:bold;}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.85rem;font-weight:500;margin:4px;}
+.tag-blue{background:#dbeafe;color:#1e40af;}
+.tag-green{background:#d1fae5;color:#065f46;}
+.tag-purple{background:#e9d5ff;color:#6b21a8;}
+.tag-orange{background:#fed7aa;color:#9a3412;}
+.checklist{list-style:none;}
+.checklist li{padding:10px 0;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--border);}
+.checklist li:last-child{border-bottom:none;}
+.checkbox{width:22px;height:22px;border:2px solid var(--border);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;margin-top:2px;}
+.checkbox.checked{background:var(--success);border-color:var(--success);color:white;}
+.output-display{background:var(--dark);color:#e2e8f0;padding:20px;border-radius:12px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.8;margin-top:16px;white-space:pre-wrap;display:none;}
+.output-display.show{display:block;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:2px solid var(--border);}
+.completion-screen{text-align:center;padding:40px 20px;}
+.completion-screen h2{font-size:2rem;color:var(--primary-dark);margin-bottom:16px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:30px 0;}
+.stat-card{background:var(--light);padding:20px;border-radius:12px;border:2px solid var(--border);}
+.stat-number{font-size:2rem;font-weight:bold;color:var(--primary);}
+.stat-label{color:var(--gray);font-size:0.9rem;margin-top:4px;}
+.decision-tree{display:flex;flex-direction:column;gap:16px;margin:20px 0;}
+.decision-node{background:white;border:2px solid var(--border);border-radius:12px;padding:20px;position:relative;transition:all 0.3s;}
+.decision-node:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+.decision-connector{width:2px;height:24px;background:var(--border);margin-left:24px;}
+.hidden{display:none;}
+@media(max-width:600px){.header h1{font-size:1.8rem;}.module{padding:20px;}.nav-buttons{flex-direction:column;gap:10px;}.btn{width:100%;justify-content:center;}}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.hint-pulse{animation:pulse 2s infinite;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🎯 The Product Discovery Playground</h1>
+<p>Your interactive 30-minute crash course into Product Discovery. No fluff — just hands-on practice with real frameworks.</p>
+<div class="badge">⏱️ ~30 min | 7 Modules | For PMs transitioning into Discovery</div>
+</div>
+<div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+<div class="progress-text" id="progressText">Module 1 of 7: Let us begin!</div>
+<div class="module active" id="module1">
+<div class="module-header">
+<div class="module-number">1</div>
+<div>
+<div class="module-title">The Discovery Mindset Shift</div>
+<div class="module-subtitle">From "Build it and they will come" to "Learn first, build later"</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🧠 What is Product Discovery?</h3>
+<p>Product Discovery is the process of <strong>figuring out what to build</strong> before you build it. It is where you reduce uncertainty about problems, users, and solutions.</p>
+<div class="highlight-box"><strong>Core Principle:</strong> In Discovery, you are not validating your idea — you are <em>discovering</em> if there is a problem worth solving, and if your solution actually works.</div>
+</div>
+<div class="content-block">
+<h3>🔄 The Big Shift: Delivery vs. Discovery</h3>
+<p>As a PM, you have probably lived in "Delivery mode." Here is how Discovery is different:</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+<div style="background:#fee2e2;padding:16px;border-radius:8px;border:2px solid #fecaca;">
+<strong style="color:#991b1b;">📦 Delivery Mode</strong><br>
+<span style="color:#7f1d1d;font-size:0.9rem;">• Focus on outputs<br>• Roadmaps with dates<br>• "When will it ship?"<br>• Success = on time</span>
+</div>
+<div style="background:#d1fae5;padding:16px;border-radius:8px;border:2px solid #a7f3d0;">
+<strong style="color:#065f46;">🔍 Discovery Mode</strong><br>
+<span style="color:#064e3b;font-size:0.9rem;">• Focus on outcomes<br>• Hypotheses to test<br>• "Should we build this?"<br>• Success = learning</span>
+</div>
+</div>
+</div>
+<div class="content-block">
+<h3>✅ Quick Self-Assessment</h3>
+<p>Which of these best describes your current situation?</p>
+<div class="decision-tree">
+<button class="btn btn-option" onclick="selectOption(this,'scenario1')"><strong>"I have a solution in mind and need to validate it"</strong><br><span style="color:var(--gray);font-size:0.9rem;">You might be in "solution mode" — we will help you step back.</span></button>
+<button class="btn btn-option" onclick="selectOption(this,'scenario2')"><strong>"I know there is a problem but I am not sure which to tackle first"</strong><br><span style="color:var(--gray);font-size:0.9rem;">Perfect! You are in the right headspace for discovery.</span></button>
+<button class="btn btn-option" onclick="selectOption(this,'scenario3')"><strong>"My team just ships features but we do not know if they work"</strong><br><span style="color:var(--gray);font-size:0.9rem;">You need to build a discovery practice — we will show you how.</span></button>
+</div>
+<div id="scenario-feedback" style="margin-top:16px;padding:16px;border-radius:8px;display:none;"></div>
+</div>
+<div class="nav-buttons"><div></div><button class="btn btn-primary" onclick="nextModule()">Start Discovery Journey →</button></div>
+</div>
+<div class="module" id="module2">
+<div class="module-header">
+<div class="module-number">2</div>
+<div>
+<div class="module-title">Problem Discovery</div>
+<div class="module-subtitle">Finding problems worth solving (not solutions looking for problems)</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🎯 The Problem Statement Canvas</h3>
+<p>Before brainstorming solutions, articulate the problem clearly. Use this framework:</p>
+<div class="framework-box"><strong>When</strong> [situation], <strong>I want to</strong> [motivation], <strong>so I can</strong> [expected outcome], <strong>but</strong> [obstacle/frustration].</div>
+<div class="interactive-area">
+<h4 style="margin-bottom:16px;">📝 Your Turn: Craft a Problem Statement</h4>
+<p style="font-size:0.9rem;color:var(--gray);margin-bottom:16px;">Think of a problem your users face. Fill in the blanks below.</p>
+<div class="input-group"><label>Situation (When...)</label><input type="text" id="prob-situation" placeholder="e.g., I am trying to file an expense report at the end of a business trip"></div>
+<div class="input-group"><label>Motivation (I want to...)</label><input type="text" id="prob-motivation" placeholder="e.g., quickly submit all my receipts without missing any"></div>
+<div class="input-group"><label>Expected Outcome (so I can...)</label><input type="text" id="prob-outcome" placeholder="e.g., get reimbursed before my credit card bill is due"></div>
+<div class="input-group"><label>Obstacle (but...)</label><input type="text" id="prob-obstacle" placeholder="e.g., I cannot find all my receipts and the form is confusing"></div>
+<button class="btn btn-success" onclick="generateProblemStatement()">✨ Generate Problem Statement</button>
+<div class="output-display" id="problemOutput"></div>
+</div>
+</div>
+<div class="content-block">
+<h3>🔍 Problem Discovery Techniques</h3>
+<div style="display:grid;gap:12px;margin:16px 0;">
+<div class="decision-node"><strong>🗣️ User Interviews</strong><br><span style="color:var(--gray);">1-on-1 conversations focused on past behaviors. Ask "Tell me about the last time you..."</span></div>
+<div class="decision-connector"></div>
+<div class="decision-node"><strong>📊 Support Ticket Analysis</strong><br><span style="color:var(--gray);">Mine support tickets, NPS verbatims, and churn surveys for recurring pain points.</span></div>
+<div class="decision-connector"></div>
+<div class="decision-node"><strong>🔬 Jobs-to-be-Done Interviews</strong><br><span style="color:var(--gray);">Focus on the "job" the user hired your product to do.</span></div>
+</div>
+</div>
+<div class="scenario-card">
+<h4>💼 Mini Scenario: The Feature Request Trap</h4>
+<p>Your biggest customer asks for a "dark mode" feature. What do you do?</p>
+<div style="margin-top:12px;">
+<button class="btn btn-option" onclick="showScenario2Feedback('A')">Add it to the roadmap immediately</button>
+<button class="btn btn-option" onclick="showScenario2Feedback('B')">Ask "Why do you need dark mode?"</button>
+<button class="btn btn-option" onclick="showScenario2Feedback('C')">Run a company-wide survey first</button>
+</div>
+<div id="scenario2-feedback" style="margin-top:12px;padding:12px;border-radius:8px;display:none;"></div>
+</div>
+<div class="nav-buttons"><button class="btn btn-secondary" onclick="prevModule()">← Back</button><button class="btn btn-primary" onclick="nextModule()">Next: User Research →</button></div>
+</div>
+<div class="module" id="module3">
+<div class="module-header">
+<div class="module-number">3</div>
+<div>
+<div class="module-title">User Research & Personas</div>
+<div class="module-subtitle">Understanding who you are building for (beyond demographics)</div>
+</div>
+</div>
+<div class="content-block">
+<h3>👤 The Persona Canvas</h3>
+<p>Forget age and job title. In Product Discovery, we care about <strong>behaviors, goals, and pain points</strong>.</p>
+<div class="interactive-area">
+<h4 style="margin-bottom:16px;">📝 Build a Behavioral Persona</h4>
+<div class="input-group"><label>Persona Name</label><input type="text" id="persona-name" placeholder="e.g., 'Overwhelmed Olivia'"></div>
+<div class="input-group"><label>What triggers them to seek a solution? (The "Struggling Moment")</label><textarea id="persona-trigger" placeholder="e.g., 'When I realize I have spent 3 hours on a report that should take 30 minutes'"></textarea></div>
+<div class="input-group"><label>What are they currently doing instead? (Current workaround)</label><textarea id="persona-workaround" placeholder="e.g., 'I copy-paste data between 3 spreadsheets'"></textarea></div>
+<div class="input-group"><label>What does success look like for them? (Desired outcome)</label><textarea id="persona-success" placeholder="e.g., 'I want to generate reports automatically so I can focus on analysis'"></textarea></div>
+<button class="btn btn-success" onclick="generatePersona()">✨ Create Persona Card</button>
+<div class="output-display" id="personaOutput"></div>
+</div>
+</div>
+<div class="content-block">
+<h3>🎤 Interview Tips for PMs</h3>
+<div class="highlight-box"><strong>The Mom Test Rules:</strong><ul style="margin-top:8px;padding-left:20px;"><li>Talk about <strong>their life</strong>, not your idea</li><li>Ask about <strong>specific past experiences</strong>, not hypotheticals</li><li>Listen more than you talk (aim for 80/20)</li><li>"Tell me more about that" is your best friend</li></ul></div>
+</div>
+<div class="content-block">
+<h3>📋 Research Checklist</h3>
+<ul class="checklist">
+<li><div class="checkbox" onclick="toggleCheck(this)"></div><span>I have a clear research goal</span></li>
+<li><div class="checkbox" onclick="toggleCheck(this)"></div><span>I have recruited 5-8 participants</span></li>
+<li><div class="checkbox" onclick="toggleCheck(this)"></div><span>I have an interview guide with open-ended questions</span></li>
+<li><div class="checkbox" onclick="toggleCheck(this)"></div><span>I have planned how to synthesize findings</span></li>
+<li><div class="checkbox" onclick="toggleCheck(this)"></div><span>I have a note-taker or recording setup</span></li>
+</ul>
+</div>
+<div class="nav-buttons"><button class="btn btn-secondary" onclick="prevModule()">← Back</button><button class="btn btn-primary" onclick="nextModule()">Next: Opportunity Scoring →</button></div>
+</div>
+<div class="module" id="module4">
+<div class="module-header">
+<div class="module-number">4</div>
+<div>
+<div class="module-title">Opportunity Scoring</div>
+<div class="module-subtitle">Prioritizing what to explore (not everything is worth solving)</div>
+</div>
+</div>
+<div class="content-block">
+<h3>📊 The RICE Framework (Adapted for Discovery)</h3>
+<div class="framework-box">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+<div><strong>🎯 Reach</strong><br><span style="color:var(--gray);font-size:0.9rem;">How many users experience this problem?</span></div>
+<div><strong>💡 Impact</strong><br><span style="color:var(--gray);font-size:0.9rem;">How painful is this problem? (1-10)</span></div>
+<div><strong>✅ Confidence</strong><br><span style="color:var(--gray);font-size:0.9rem;">How sure are we this is a real problem?</span></div>
+<div><strong>⚡ Effort to Learn</strong><br><span style="color:var(--gray);font-size:0.9rem;">How hard is it to validate this?</span></div>
+</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🎮 Interactive Opportunity Scorer</h3>
+<div class="interactive-area">
+<div class="input-group"><label>Opportunity Name</label><input type="text" id="opp-name" placeholder="e.g., 'Users cannot find advanced search filters'"></div>
+<div class="input-group"><label>Reach (1-10): <span id="reach-val" class="hint-pulse">5</span></label><input type="range" min="1" max="10" value="5" id="reach" oninput="updateScore()" style="width:100%;"></div>
+<div class="input-group"><label>Impact (1-10): <span id="impact-val">5</span></label><input type="range" min="1" max="10" value="5" id="impact" oninput="updateScore()" style="width:100%;"></div>
+<div class="input-group"><label>Confidence % (1-100): <span id="conf-val">50</span>%</label><input type="range" min="1" max="100" value="50" id="confidence" oninput="updateScore()" style="width:100%;"></div>
+<div class="input-group"><label>Effort to Validate (1-10): <span id="effort-val">5</span></label><input type="range" min="1" max="10" value="5" id="effort" oninput="updateScore()" style="width:100%;"></div>
+<button class="btn btn-success" onclick="calculateScore()">📊 Calculate Priority Score</button>
+<div id="scoreResult" style="margin-top:20px;padding:20px;border-radius:12px;text-align:center;display:none;">
+<div style="font-size:3rem;font-weight:bold;color:var(--primary);" id="scoreNumber">0</div>
+<div style="color:var(--gray);margin-top:8px;" id="scoreLabel">Priority Score</div>
+<div style="margin-top:12px;padding:12px;border-radius:8px;" id="scoreRecommendation"></div>
+</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🌳 The Opportunity Solution Tree</h3>
+<div class="highlight-box"><strong>Outcome</strong> (top) → <strong>Opportunities</strong> (branches) → <strong>Solutions</strong> (leaves)<br><br><span style="color:var(--gray);">This keeps your team aligned on the desired outcome while exploring multiple paths.</span></div>
+</div>
+<div class="nav-buttons"><button class="btn btn-secondary" onclick="prevModule()">← Back</button><button class="btn btn-primary" onclick="nextModule()">Next: Solution Ideation →</button></div>
+</div>
+<div class="module" id="module5">
+<div class="module-header">
+<div class="module-number">5</div>
+<div>
+<div class="module-title">Solution Ideation & Validation</div>
+<div class="module-subtitle">Generating ideas and testing them cheaply</div>
+</div>
+</div>
+<div class="content-block">
+<h3>💡 Ideation Without Ego</h3>
+<div style="display:flex;align-items:center;gap:12px;margin:20px 0;flex-wrap:wrap;justify-content:center;">
+<div style="background:#dbeafe;padding:16px 24px;border-radius:12px;text-align:center;"><div style="font-size:1.5rem;">🎯</div><strong>Problem Validated</strong><br><span style="font-size:0.85rem;color:var(--gray);">We know it is real</span></div>
+<div style="font-size:1.5rem;color:var(--primary);">→</div>
+<div style="background:#d1fae5;padding:16px 24px;border-radius:12px;text-align:center;"><div style="font-size:1.5rem;">💡</div><strong>Ideate Solutions</strong><br><span style="font-size:0.85rem;color:var(--gray);">Many ideas, no attachment</span></div>
+<div style="font-size:1.5rem;color:var(--primary);">→</div>
+<div style="background:#fef3c7;padding:16px 24px;border-radius:12px;text-align:center;"><div style="font-size:1.5rem;">🧪</div><strong>Validate Solution</strong><br><span style="font-size:0.85rem;color:var(--gray);">Does it actually work?</span></div>
+</div>
+</div>
+<div class="content-block">
+<h3>🧪 Validation Techniques (Cheapest to Most Expensive)</h3>
+<div class="interactive-area">
+<div style="display:grid;gap:12px;">
+<div style="display:flex;align-items:center;gap:16px;padding:16px;background:white;border-radius:8px;border:2px solid #d1fae5;"><div style="font-size:2rem;">📝</div><div><strong>Concierge Test</strong> — Do it manually for one user<br><span style="color:var(--gray);font-size:0.9rem;">Cost: $0 | Time: 1-2 days | Confidence: Low-Medium</span></div></div>
+<div style="display:flex;align-items:center;gap:16px;padding:16px;background:white;border-radius:8px;border:2px solid #bfdbfe;"><div style="font-size:2rem;">🎨</div><div><strong>Mockup/Wizard of Oz Test</strong> — Fake the backend, test the UI<br><span style="color:var(--gray);font-size:0.9rem;">Cost: $ | Time: 3-5 days | Confidence: Medium</span></div></div>
+<div style="display:flex;align-items:center;gap:16px;padding:16px;background:white;border-radius:8px;border:2px solid #c4b5fd;"><div style="font-size:2rem;">🛠️</div><div><strong>Prototype Test</strong> — Clickable prototype with real users<br><span style="color:var(--gray);font-size:0.9rem;">Cost: $$ | Time: 1-2 weeks | Confidence: Medium-High</span></div></div>
+<div style="display:flex;align-items:center;gap:16px;padding:16px;background:white;border-radius:8px;border:2px solid #fed7aa;"><div style="font-size:2rem;">🚀</div><div><strong>Pilot/MVP</strong> — Build the real thing for a small group<br><span style="color:var(--gray);font-size:0.9rem;">Cost: $$$ | Time: 2-4 weeks | Confidence: High</span></div></div>
+</div>
+</div>
+</div>
+<div class="scenario-card">
+<h4>💼 Mini Scenario: The Dashboard Dilemma</h4>
+<p>Your team wants to build an analytics dashboard. Users say they "want more visibility." What is the cheapest way to validate?</p>
+<div style="margin-top:12px;">
+<button class="btn btn-option" onclick="showValidationFeedback('A')">Build a working prototype and test with 5 users</button>
+<button class="btn btn-option" onclick="showValidationFeedback('B')">Send a weekly email report manually to 10 users for 2 weeks</button>
+<button class="btn btn-option" onclick="showValidationFeedback('C')">Add it to the roadmap and build it over the next quarter</button>
+</div>
+<div id="validation-feedback" style="margin-top:12px;padding:12px;border-radius:8px;display:none;"></div>
+</div>
+<div class="nav-buttons"><button class="btn btn-secondary" onclick="prevModule()">← Back</button><button class="btn btn-primary" onclick="nextModule()">Next: Prototype & Test →</button></div>
+</div>
+<div class="module" id="module6">
+<div class="module-header">
+<div class="module-number">6</div>
+<div>
+<div class="module-title">Prototype & Test</div>
+<div class="module-subtitle">Running effective experiments and learning from them</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🧪 The Experiment Canvas</h3>
+<div class="framework-box">
+<strong>We believe that</strong> [doing this/building this feature]<br>
+<strong>for</strong> [these users/personas]<br>
+<strong>will achieve</strong> [this outcome]<br>
+<strong>We will know we are right when we see</strong> [this signal/metric]<br>
+<strong>within</strong> [this timeframe]
+</div>
+<div class="interactive-area">
+<h4 style="margin-bottom:16px;">📝 Draft Your Experiment</h4>
+<div class="input-group"><label>We believe that...</label><input type="text" id="exp-belief" placeholder="e.g., adding a one-click export button"></div>
+<div class="input-group"><label>For...</label><input type="text" id="exp-users" placeholder="e.g., data analysts who generate weekly reports"></div>
+<div class="input-group"><label>Will achieve...</label><input type="text" id="exp-outcome" placeholder="e.g., reduce report generation time by 50%"></div>
+<div class="input-group"><label>We will know we are right when...</label><input type="text" id="exp-signal" placeholder="e.g., 70% of users use the export button within 3 days"></div>
+<div class="input-group"><label>Within...</label><input type="text" id="exp-timeframe" placeholder="e.g., 2 weeks of the feature being live"></div>
+<button class="btn btn-success" onclick="generateExperiment()">✨ Generate Experiment Card</button>
+<div class="output-display" id="experimentOutput"></div>
+</div>
+</div>
+<div class="content-block">
+<h3>📏 Success Metrics vs. Guardrail Metrics</h3>
+<div class="warning-box"><strong>⚠️ Common Trap:</strong> Only measuring success metrics. You also need <strong>guardrail metrics</strong> to ensure you are not breaking things.</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+<div style="background:#d1fae5;padding:16px;border-radius:8px;"><strong style="color:#065f46;">✅ Success Metrics</strong><br><span style="color:#064e3b;font-size:0.9rem;">• Task completion rate<br>• Time to complete<br>• User satisfaction (CSAT)<br>• Feature adoption</span></div>
+<div style="background:#fee2e2;padding:16px;border-radius:8px;"><strong style="color:#991b1b;">🛡️ Guardrail Metrics</strong><br><span style="color:#7f1d1d;font-size:0.9rem;">• Error rates<br>• Support tickets<br>• Page load time<br>• Churn/retention</span></div>
+</div>
+</div>
+<div class="content-block">
+<h3>🎯 Usability Testing in 5 Steps</h3>
+<ol style="padding-left:20px;color:var(--gray);">
+<li style="margin-bottom:10px;"><strong>Define tasks</strong> — Give users realistic scenarios, not instructions</li>
+<li style="margin-bottom:10px;"><strong>Recruit 5 users</strong> — You do not need 50; 5 will find 85% of issues</li>
+<li style="margin-bottom:10px;"><strong>Observe silently</strong> — Resist the urge to help!</li>
+<li style="margin-bottom:10px;"><strong>Note behaviors, not opinions</strong> — "They clicked back 3 times" > "They did not like it"</li>
+<li><strong>Synthesize patterns</strong> — Look for trends, not outliers</li>
+</ol>
+</div>
+<div class="nav-buttons"><button class="btn btn-secondary" onclick="prevModule()">← Back</button><button class="btn btn-primary" onclick="nextModule()">Next: Go/No-Go Decision →</button></div>
+</div>
+<div class="module" id="module7">
+<div class="module-header">
+<div class="module-number">7</div>
+<div>
+<div class="module-title">Go/No-Go & Discovery Metrics</div>
+<div class="module-subtitle">Making the decision and measuring your discovery practice</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🚦 The Decision Matrix</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+<div style="background:#d1fae5;padding:20px;border-radius:12px;border:2px solid #a7f3d0;"><strong style="color:#065f46;font-size:1.1rem;">🟢 GO</strong><br><span style="color:#064e3b;">Problem validated ✓<br>Solution validated ✓<br><em>Build it!</em></span></div>
+<div style="background:#fef3c7;padding:20px;border-radius:12px;border:2px solid #fcd34d;"><strong style="color:#92400e;font-size:1.1rem;">🟡 PIVOT</strong><br><span style="color:#78350f;">Problem validated ✓<br>Solution failed ✗<br><em>Try a different solution</em></span></div>
+<div style="background:#fee2e2;padding:20px;border-radius:12px;border:2px solid #fecaca;"><strong style="color:#991b1b;font-size:1.1rem;">🔴 KILL</strong><br><span style="color:#7f1d1d;">Problem not real ✗<br>Solution irrelevant ✗<br><em>Move on to next opportunity</em></span></div>
+<div style="background:#dbeafe;padding:20px;border-radius:12px;border:2px solid #bfdbfe;"><strong style="color:#1e40af;font-size:1.1rem;">🔵 LEARN MORE</strong><br><span style="color:#1e3a8a;">Unclear problem ✗<br>Unclear solution ✗<br><em>Run more research</em></span></div>
+</div>
+</div>
+<div class="content-block">
+<h3>📊 Measuring Your Discovery Practice</h3>
+<div class="interactive-area">
+<div style="display:grid;gap:16px;">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:white;border-radius:8px;border-left:4px solid var(--success);"><div><strong>Discovery Velocity</strong><br><span style="color:var(--gray);font-size:0.9rem;">How many experiments per quarter?</span></div><span class="tag tag-green">Target: 2-4/month</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:white;border-radius:8px;border-left:4px solid var(--primary);"><div><strong>Assumption Kill Rate</strong><br><span style="color:var(--gray);font-size:0.9rem;">What % of assumptions are proven wrong?</span></div><span class="tag tag-blue">Target: 30-50%</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:white;border-radius:8px;border-left:4px solid var(--accent);"><div><strong>Time to Insight</strong><br><span style="color:var(--gray);font-size:0.9rem;">How long from "I wonder..." to "We know..."?</span></div><span class="tag tag-orange">Target: &lt;2 weeks</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:white;border-radius:8px;border-left:4px solid var(--secondary);"><div><strong>Feature Success Rate</strong><br><span style="color:var(--gray);font-size:0.9rem;">What % of shipped features meet their goals?</span></div><span class="tag tag-purple">Target: &gt;70%</span></div>
+</div>
+</div>
+</div>
+<div class="content-block">
+<h3>🎓 Your Discovery Commitment</h3>
+<div class="interactive-area">
+<div class="input-group">
+<label>This week, I will...</label>
+<select id="commitment" style="width:100%;padding:12px;border-radius:8px;border:2px solid var(--border);">
+<option value="">Choose one...</option>
+<option value="interview">Run 3 user interviews focused on problems (not solutions)</option>
+<option value="problem">Write a proper problem statement for my top feature idea</option>
+<option value="experiment">Design one small experiment to test an assumption</option>
+<option value="metrics">Set up a discovery metrics dashboard</option>
+<option value="team">Introduce my team to the Opportunity Solution Tree</option>
+</select>
+</div>
+<button class="btn btn-success" onclick="showCommitment()">✅ I am Committed!</button>
+<div id="commitment-display" style="margin-top:16px;padding:16px;border-radius:8px;display:none;"></div>
+</div>
+</div>
+<div class="nav-buttons"><button class="btn btn-secondary" onclick="prevModule()">← Back</button><button class="btn btn-primary" onclick="showCompletion()">🎉 Complete Journey</button></div>
+</div>
+<div class="module" id="completion">
+<div class="completion-screen">
+<div style="font-size:4rem;margin-bottom:20px;">🎉</div>
+<h2>You have Completed the Playground!</h2>
+<p style="color:var(--gray);max-width:500px;margin:0 auto;">You have practiced the core skills of Product Discovery. Here is what you accomplished:</p>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-number">7</div><div class="stat-label">Modules Completed</div></div>
+<div class="stat-card"><div class="stat-number">3+</div><div class="stat-label">Frameworks Practiced</div></div>
+<div class="stat-card"><div class="stat-number">∞</div><div class="stat-label">Mindset Shift Started</div></div>
+</div>
+<div class="highlight-box" style="text-align:left;max-width:600px;margin:30px auto;">
+<h3 style="margin-bottom:12px;">📚 Keep Learning:</h3>
+<ul style="padding-left:20px;color:var(--gray);">
+<li><strong>"Continuous Discovery Habits"</strong> by Teresa Torres</li>
+<li><strong>"The Mom Test"</strong> by Rob Fitzpatrick</li>
+<li><strong>"Inspired"</strong> by Marty Cagan</li>
+<li><strong>"Jobs to be Done"</strong> by Tony Ulwick</li>
+</ul>
+</div>
+<div style="margin-top:30px;">
+<button class="btn btn-primary" onclick="restart()">🔄 Start Over</button>
+<button class="btn btn-secondary" onclick="window.print()">🖨️ Print My Work</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+let currentModule=1;
+const totalModules=7;
+function updateProgress(){
+const progress=((currentModule-1)/totalModules)*100;
+document.getElementById('progressBar').style.width=progress+'%';
+document.getElementById('progressText').textContent=currentModule<=totalModules?`Module ${currentModule} of ${totalModules}: ${getModuleName(currentModule)}`:'Journey Complete! 🎉';
+}
+function getModuleName(n){
+const names=['','The Discovery Mindset','Problem Discovery','User Research','Opportunity Scoring','Solution Validation','Prototype & Test','Go/No-Go Decision'];
+return names[n]||'';
+}
+function nextModule(){
+document.getElementById('module'+currentModule).classList.remove('active');
+currentModule++;
+if(currentModule<=totalModules){
+document.getElementById('module'+currentModule).classList.add('active');
+window.scrollTo({top:0,behavior:'smooth'});
+}
+updateProgress();
+}
+function prevModule(){
+if(currentModule>1){
+document.getElementById('module'+currentModule).classList.remove('active');
+currentModule--;
+document.getElementById('module'+currentModule).classList.add('active');
+window.scrollTo({top:0,behavior:'smooth'});
+updateProgress();
+}
+}
+function showCompletion(){
+document.getElementById('module'+currentModule).classList.remove('active');
+document.getElementById('completion').classList.add('active');
+document.getElementById('progressBar').style.width='100%';
+document.getElementById('progressText').textContent='Journey Complete! 🎉';
+window.scrollTo({top:0,behavior:'smooth'});
+}
+function restart(){
+document.getElementById('completion').classList.remove('active');
+currentModule=1;
+document.getElementById('module1').classList.add('active');
+document.querySelectorAll('input,textarea').forEach(el=>el.value='');
+document.querySelectorAll('.output-display').forEach(el=>{el.classList.remove('show');el.textContent='';});
+document.querySelectorAll('.checkbox').forEach(el=>el.classList.remove('checked'));
+document.querySelectorAll('.btn-option').forEach(el=>el.classList.remove('selected'));
+updateProgress();
+window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectOption(btn,scenario){
+document.querySelectorAll('#module1 .btn-option').forEach(b=>b.classList.remove('selected'));
+btn.classList.add('selected');
+const feedback=document.getElementById('scenario-feedback');
+const messages={'scenario1':'💡 Great awareness! You are in "solution mode." Discovery will help you step back and validate the problem first. Remember: fall in love with the problem, not the solution.','scenario2':'✅ Perfect starting point! You are already thinking like a discovery PM. This guide will give you the tools to prioritize and validate.','scenario3':'🔥 You need this the most! Building a discovery practice will transform how your team builds products. Let us dive in!'};
+feedback.textContent=messages[scenario];
+feedback.style.background='#d1fae5';
+feedback.style.color='#065f46';
+feedback.style.display='block';
+}
+function generateProblemStatement(){
+const situation=document.getElementById('prob-situation').value||'[situation]';
+const motivation=document.getElementById('prob-motivation').value||'[motivation]';
+const outcome=document.getElementById('prob-outcome').value||'[outcome]';
+const obstacle=document.getElementById('prob-obstacle').value||'[obstacle]';
+const output=document.getElementById('problemOutput');
+output.textContent=`PROBLEM STATEMENT:\n\n"When ${situation}, I want to ${motivation}, so I can ${outcome}, but ${obstacle}."\n\n✅ This is your north star. Every solution idea should map back to solving this problem.`;
+output.classList.add('show');
+}
+function showScenario2Feedback(option){
+const feedback=document.getElementById('scenario2-feedback');
+const messages={'A':{text:'⚠️ Caution: This is the "HiPPO" trap (Highest Paid Person\'s Opinion). Always dig deeper into the "why" before committing resources.',color:'#fef3c7',textColor:'#92400e'},'B':{text:'✅ Excellent! This is the discovery mindset. You are seeking to understand the underlying need, not just the requested feature.',color:'#d1fae5',textColor:'#065f46'},'C':{text:'📊 Surveys have their place, but they are poor at uncovering "why." Start with interviews, then validate with surveys.',color:'#dbeafe',textColor:'#1e40af'}};
+const msg=messages[option];
+feedback.textContent=msg.text;
+feedback.style.background=msg.color;
+feedback.style.color=msg.textColor;
+feedback.style.display='block';
+}
+function generatePersona(){
+const name=document.getElementById('persona-name').value||'User Persona';
+const trigger=document.getElementById('persona-trigger').value||'[trigger]';
+const workaround=document.getElementById('persona-workaround').value||'[workaround]';
+const success=document.getElementById('persona-success').value||'[success]';
+const output=document.getElementById('personaOutput');
+output.textContent=`╔══════════════════════════════════════╗\n║  👤 ${name.toUpperCase().padEnd(32)} ║\n╠══════════════════════════════════════╣\n║  TRIGGER:                            ║\n║  "${trigger}"\n║                                      ║\n║  CURRENT WORKAROUND:                 ║\n║  "${workaround}"\n║                                      ║\n║  DESIRED OUTCOME:                    ║\n║  "${success}"\n╚══════════════════════════════════════╝\n\n💡 Use this persona to evaluate every solution idea: "Would this help ${name.split(' ')[0]}?"`;
+output.classList.add('show');
+}
+function toggleCheck(box){
+box.classList.toggle('checked');
+if(box.classList.contains('checked')){box.innerHTML='✓';}else{box.innerHTML='';}
+}
+function updateScore(){
+document.getElementById('reach-val').textContent=document.getElementById('reach').value;
+document.getElementById('impact-val').textContent=document.getElementById('impact').value;
+document.getElementById('conf-val').textContent=document.getElementById('confidence').value;
+document.getElementById('effort-val').textContent=document.getElementById('effort').value;
+}
+function calculateScore(){
+const reach=parseInt(document.getElementById('reach').value);
+const impact=parseInt(document.getElementById('impact').value);
+const confidence=parseInt(document.getElementById('confidence').value)/100;
+const effort=parseInt(document.getElementById('effort').value);
+const score=Math.round((reach*impact*confidence)/effort);
+const resultDiv=document.getElementById('scoreResult');
+const scoreNum=document.getElementById('scoreNumber');
+const recDiv=document.getElementById('scoreRecommendation');
+scoreNum.textContent=score;
+resultDiv.style.display='block';
+let rec='';
+let color='';
+if(score>=15){rec='🟢 HIGH PRIORITY: This opportunity is well worth exploring. The problem is painful, affects many users, and you can validate it quickly.';color='#d1fae5';}
+else if(score>=8){rec='🟡 MEDIUM PRIORITY: Worth exploring, but consider if you can increase confidence or reduce validation effort first.';color='#fef3c7';}
+else{rec='🔴 LOW PRIORITY: Either the problem is not painful enough, affects too few users, or is too hard to validate. Consider other opportunities.';color='#fee2e2';}
+recDiv.textContent=rec;
+recDiv.style.background=color;
+}
+function showValidationFeedback(option){
+const feedback=document.getElementById('validation-feedback');
+const messages={'A':{text:'This is a solid approach, but it is relatively expensive. You have already committed design/eng resources before validating demand.',color:'#fef3c7',textColor:'#92400e'},'B':{text:'✅ BEST CHOICE! This is a classic Concierge Test. You are manually delivering the value to see if users actually engage — before building anything.',color:'#d1fae5',textColor:'#065f46'},'C':{text:'🔴 This is the anti-discovery approach. You are committing months of work without any evidence that users actually want this.',color:'#fee2e2',textColor:'#991b1b'}};
+const msg=messages[option];
+feedback.textContent=msg.text;
+feedback.style.background=msg.color;
+feedback.style.color=msg.textColor;
+feedback.style.display='block';
+}
+function generateExperiment(){
+const belief=document.getElementById('exp-belief').value||'[doing this]';
+const users=document.getElementById('exp-users').value||'[these users]';
+const outcome=document.getElementById('exp-outcome').value||'[this outcome]';
+const signal=document.getElementById('exp-signal').value||'[this signal]';
+const timeframe=document.getElementById('exp-timeframe').value||'[this timeframe]';
+const output=document.getElementById('experimentOutput');
+output.textContent=`EXPERIMENT CARD:\n═══════════════════════════════════════\n\nHYPOTHESIS:\nWe believe that ${belief}\nfor ${users}\nwill achieve ${outcome}\n\nSUCCESS CRITERIA:\nWe will know we are right when we see ${signal}\n\nTIMEBOX:\nWithin ${timeframe}\n\n✅ Share this card with your team before running the experiment!`;
+output.classList.add('show');
+}
+function showCommitment(){
+const commitment=document.getElementById('commitment').value;
+const display=document.getElementById('commitment-display');
+if(!commitment){
+display.textContent='⚠️ Please select a commitment first!';
+display.style.background='#fee2e2';
+display.style.color='#991b1b';
+}else{
+const actions={'interview':'Run 3 user interviews focused on problems (not solutions)','problem':'Write a proper problem statement for my top feature idea','experiment':'Design one small experiment to test an assumption','metrics':'Set up a discovery metrics dashboard','team':'Introduce my team to the Opportunity Solution Tree'};
+display.textContent=`✅ COMMITTED: This week, you will ${actions[commitment].toLowerCase()}.\n\nPro tip: Block 30 minutes on your calendar right now to get started. Momentum matters!`;
+display.style.background='#d1fae5';
+display.style.color='#065f46';
+}
+display.style.display='block';
+}
+</script>
+</body>
+</html>
